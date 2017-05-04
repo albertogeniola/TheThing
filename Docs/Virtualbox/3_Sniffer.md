@@ -106,8 +106,8 @@ The first step is to adjust the configuration regarding the DHCP service and the
 
 ```
 # --------------------------------------------------
-interface=lo
 interface=eth1
+interface=lo
 dhcp-range=192.168.0.2,192.168.0.250,255.255.255.0,12h 
 # --------------------------------------------------
 ```
