@@ -6,7 +6,7 @@ Download and install the appropriate Postgres DB version [from here](https://www
 
 During the installation, stick with the defaults (e.g. use 5432 as listening port). Remember to note down the superuser password for using the databse.
 
-Now we need to create a database named "analyzer" and an user (called "host_controller_agent") for our purposes. Open a command prompt and navigate to postgres bin directory (usually _C:\program files\postgreSQL\9.4\bin\\_). Then execute the following commands:
+Now we need to create a database named "analyzer" and an user called "host_controller_agent". Open a command prompt and navigate to postgres bin directory (usually _C:\program files\postgreSQL\9.4\bin\\_). Then execute the following commands:
 
 ```
     C:\> createdb -U postgres analyzer
@@ -24,7 +24,7 @@ Now we need to create a database named "analyzer" and an user (called "host_cont
     <CTRL+C> to exit
 ```
 
-We have now created a database named _analyzer_ and an user named _host\_controller\_agent_ with password _<<new_database_password>>_. Obviously, the user has to specify a meaningful password different from the placeholder used in this tutorial.
+We have now created a database named _analyzer_ and an user named _host\_controller\_agent_ with password _<<new_database_password>>_. Obviously, the user has to specify a meaningful password different from the placeholder used in this tutorial. Also, note the trailing semicolon used in both the SQL commands.
 
 To test if everything has worked, just try to log-in as the newly created user:
 ```

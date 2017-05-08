@@ -25,7 +25,7 @@ A third network is emulated via the VirtualBox Nat Engine. Such network routes t
 
 The Virtual Sniffer acts as a gateway, by forwarding traffic from 192.168.0.0/24 to 172.16.0.1/24, which is in turn routed to the Internet via the physical NIC of the server. This configuration is pretty heavy and involves cascading NAT. Therefore it does not scale nor perform well. However, since all NIC use paravirtualized network, this configuration is still suitable for a small number of sandboxes and requires no networking hardware to be implemented. 
 
-In the end, each sandbox has a single NIC, and use DHCP to acquire an IP address. The sniffer uses DNSMasq service to provide both DNS realy and DHCP services on 192.168.0.0/24.
+In the end, each sandbox has a single NIC, using DHCP to acquire an IP address. The sniffer uses DNSMasq service to provide both DNS realy and DHCP services on 192.168.0.0/24.
 
 ## What's next?
 The entire tutorial is divided into 5 steps, to be followed in order:
