@@ -14,10 +14,15 @@ A single tier topology condensates all the mandatory modules of the infrastructu
 
 The goal of this tutorial is to obtain the configuration showed in the following figure.
 
+<!-- ![Single tier - virtualbox topology details](img/SingleTierVboxConf.png "Figure 1: Topology overview") -->
+![Single tier - virtualbox topology details](img/SingleTierVboxConf.png "Figure 1: Topology overview")
+
+<html>
 <p align="center">
 <img alt="Single tier - virtualbox topology details" src="img/SingleTierVboxConf.png"><br/>
 <span><b>Figure 1</b>: Topology overview</span>
 </p>
+<html>
 
 The host node has three distinct network interfaces. The first one is its physical NIC, used as main adapter when accessing the network. This interface will bind an IP address, marked as XXX.XXX.XXX.XXX, depending on how the user's network is configured.
 
