@@ -2,6 +2,7 @@
 A single tier configuration consists in installing all the mandatory parts of the distributed system on a single hardware node. Obviously, such a configuration frustrates the advantages of a distributed system (scalability, robustness, etc.). On the other hand, it enables a simpler configuration scheme and simplifies some security issues affecting more complex topologies.
 
 In general, we do recommend this configuration if one or more of the following conditions are met:
+
 - This is the first time the user is experimenting the infrastructure.
 - Only a single, robust and high-performance server can be used for deploying the infrastructure.
 - Security is a must.
