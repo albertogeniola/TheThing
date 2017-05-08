@@ -121,4 +121,4 @@ The system will automatically recognize and will prompt confirmation for install
 At this point, we the virtual machine should also have internet connectivity. We can now proceed with the following step.
 
 ## Install the GuestAgent Bootstrapper
-
+From within the Virtual Machine, open a browser and navigate to this URL: 
