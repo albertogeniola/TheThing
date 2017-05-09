@@ -181,3 +181,11 @@ C:\> cd "%PROGRAMFILES%\Oracle\VirtualBox"
 ..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi" --format VDI
 ```
 
+## What next?
+The entire tutorial is divided into 5 steps, to be followed in order:
+
+1. [Introduction](1_Introduction.md)
+1. [Database and HostController installation](2_DB_and_HostController.md)
+1. Sniffer installation
+1. [Guest installation](4_Guest.md) (_next step_)
+1. [HostController configuration](5_Configuration.md)

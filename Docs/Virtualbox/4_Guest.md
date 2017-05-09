@@ -177,3 +177,12 @@ Finally, make the virtual disk readonly. This step is not mandatory. However it 
 ```
 $ chmod 555 "/home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi"
 ```
+
+## What next?
+The entire tutorial is divided into 5 steps, to be followed in order:
+
+1. [Introduction](1_Introduction.md)
+1. [Database and HostController installation](2_DB_and_HostController.md)
+1. [Sniffer installation](4_Guest.md)
+1. Guest installation
+1. [HostController configuration](5_Configuration.md) (_next step_)
