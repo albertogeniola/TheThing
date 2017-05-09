@@ -118,7 +118,62 @@ Navigate among the devices and look for the unrecognized Ethernet Controller und
 A driver installation wizard will begin. Select "Look for a driver in a specific location" and browse the D: drive, where the virtio iso has been mounted.
 The system will automatically recognize and will prompt confirmation for installing the needed driver. Be sure to accept the driver installation.
 
-At this point, we the virtual machine should also have internet connectivity. We can now proceed with the following step.
+## Windows update and activation
+At this stage the Guest is capable of surfing the Internet via its own virtual adapter (which is natted behind the network of the host).
+Therefore, the user can now activate the operating system. We also suggest to update the system via Windows Update. Once the updates have been correctly installed, ww strongly advise to disable the automatic update feature.
+Doing so, the system will not try to update the OS during the analysis. On the contrary, in case automatic updates are left enabled, there is a chance that they will trigger during the analysis, impacting on performance and potentially biasing sniffed network traffic.
+
+Once the system has been correctly activated and updates have been performed, the user can then proceed with the installation of the GuestAgent bootstrapper.
 
 ## Install the GuestAgent Bootstrapper
-From within the Virtual Machine, open a browser and navigate to this URL: 
+From within the Virtual Machine, open a browser and navigate to this URL: # TODO: fix the following URL.
+https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe
+
+Then, execute the installation of the bootstrapper, by simply double clicking on it. Then, follow the wizard to complete the installation. The installer will take care of downloading the needed python environment, necessary dependencies and will also install the bootstrap autostart task.
+
+To double check the bootstrapper installation, reboot the virtual machine. Just after Windows loads up, the bootstrapper program should automatically start, complaining about _no response from any sniffer_. If that is the case, the bootstrapper is correctly working. Now close the bootstrapper and shut down the virtual machine correctly.
+
+## Pack the image
+The image is finally ready. We just need to save it to a known location and make it "immutable".
+To do so, we need to shut down the virtual machine, release the disk from the storage controller, make it immutable and then remove the guest_preparation machine.
+
+### Windows
+Open a prompt and execute the following:
+
+```
+C:\> cd "%PROGRAMFILES%\Oracle\Virtualbox"
+C:\> vboxmanage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --medium none
+C:\> vboxmanage modifymedium "C:\InstallAnalyzer\Disks\guest_preparation.vdi" --type immutable --compact
+```
+
+Now we want to remove the virtual machine used to setup the virtual disk.
+
+```
+C:\> vboxmanage unregistervm "guest_preparation" --delete
+```
+
+Finally, make the virtual disk readonly. This step is not mandatory. However it is recommended toi make the disk readonly so that there is no change for Virtualbox to write on it.
+
+```
+C:\> attrib +R "C:\InstallAnalyzer\Disks\guest_preparation.vdi"
+```
+
+### Linux
+Similarly to the windows commands, let's open a terminal and release the disk from the virtual machine.
+
+```
+$ vboxmanage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --medium none
+$ vboxmanage modifymedium /home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi" --type immutable --compact
+```
+
+Then remove the virtual machine:
+
+```
+$ vboxmanage unregistervm "guest_preparation" --delete
+```
+
+Finally, make the virtual disk readonly. This step is not mandatory. However it is recommended toi make the disk readonly so that there is no change for Virtualbox to write on it.
+
+```
+$ chmod 555 "/home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi"
+```
