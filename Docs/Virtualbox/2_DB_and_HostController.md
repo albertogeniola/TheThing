@@ -152,7 +152,7 @@ Once downloaded, extract the sdk content somewhere, cd into sdk/installer and ru
 
 Then, copy the vboxwebservice bindinds:
 ```
-    C:\> cd sdk/bindings/webservice/python/lib
+    C:\> cd ../bindings/webservice/python/lib
     C:\> copy *.py C:\InstallAnalyzer\lib\site-packages\vboxapi\
 ```
 
@@ -178,12 +178,12 @@ At this stage, all the "hard" dependencies should be ok. It's time to download a
 First, let's clone the git repository of HostController Agent
 
 ```
-   C:\> git clone https://github.com/albertogeniola/HostController1.1_python.git
+   C:\> git clone https://albertogeniola@bitbucket.org/aaltopuppaper/hostcontroller.git
 ```
 
 Now we need to build the distributable version and install it via PIP command.
 ```
-   C:\> cd HostController1.1_python
+   C:\> cd hostcontroller
    C:\> C:\InstallAnalyzer\scripts\python setup.py sdist
    C:\> cd dist
    C:\> C:\InstallAnalyzer\scripts\pip install HostController-0.1.zip
