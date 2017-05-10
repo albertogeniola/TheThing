@@ -133,6 +133,10 @@ Our objective is to forward packets from internal network, on /dev/eth1, to the 
 $ sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 $ sudo iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 $ sudo iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
+
+$ sudo iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE
+$ sudo iptables -A FORWARD -i eth2 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+$ sudo iptables -A FORWARD -i eth1 -o eth2 -j ACCEPT
 ```
 
 Since IPTABLES rules are not automatically persisted, we need to save them.
