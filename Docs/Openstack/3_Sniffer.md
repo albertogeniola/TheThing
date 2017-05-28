@@ -1,6 +1,6 @@
 # Introduction
-A sniffer is a machine (which might be physical or virtual) acting as a gateway between analyzer guests and the Internet. In this tutorial we will refer to it with both _gateway_ and _sniffer_ terms. It implements some basic network services for guest machines, alongside a backend web interface, used by the HostController to manage sniffing sessions. 
-In accordance with the single tier topology, we will virtualize the sniffer alongside the guest vms. 
+A sniffer is a machine (which might be physical or virtual) acting as a gateway between analyzer guests and the Internet. In this tutorial we will refer to it with both _gateway_ and _sniffer_ terms. It implements some basic network services for guest machines, alongside a backend web interface, used by the HostController to manage sniffing sessions.
+In accordance with the single tier topology, we will virtualize the sniffer alongside the guest vms.
 
 The user might opt for one of the following options in order to install the sniffer virtual image:
 - Download and use the pre-configured VDI image for _Virtualbox Emulated Sniffer_ [from here]() (__recommended for first-time users__)
@@ -9,16 +9,41 @@ The user might opt for one of the following options in order to install the snif
 The first option is advised for users who approach to the system for the first time. In fact, the pre-configured image has been customized in accordance with the network configuration presented in [Introduction](1_Introduction.md). If the user has stuck with the topology presented in the previous steps, this image will work out-of-the-box. On the contrary, if some network configuration has been customized, it is necessary to adjust or configure the image from scratch.
 
 ## Option A: Download preconfigured image
-The pre-configured image of Sniffer is [available here](). Such image is a compressed dynamically allocated VDI, of about ## Gb.
-Once downloaded, extract the image into a known location, e.g. __C:\InstallAnalyzer__. 
+This approach consists in using a pre-configured linux image which reflects all the configuration needed to work with a two tier architecture via remote Openstack cloud.
+Still, the user must change the default access credentials to the machine, preventing others to obtain unlegitimate access to such instance.
 
-The given image configures the first NIC, _eth0_, of the gateway as WAN access. In our specific configuration, this interface is given the static address _172.16.0.2_. Its traffic flows through the Virtualbox NAT netowrk, which is internally controlled by the HostController Agent. The second nic, _eth1_, is then attached to the internal ant connecting guests to the sniffer. A DHCP service is bound to that NIC and serves addresses from _192.168.2.2/24_ up to _192.168.2.250/24_. The provided image also contains the last version of the MiddleRouter software, that is used for sniffing traffic from guest instances.
+So, the first step is to download the preconfigured image, which is [available here]().
+Once downloaded, extract the image into a known location, e.g. __C:\InstallAnalyzer__.
+Then, use your favourite virtualization system to create a virtual machine and mount such image as primary disk.
+Hence, boot the VM and log in with the following credentials:
 
-Credentials used by that image are:
 - Username: ubuntu
 - Password: reverse
 
-Such image is ready to be used in test environments. Before using such image in a production environment we **strongly advise to change username/password credentials**. This can be done in a number of ways. The easiest is to mount the image on a VM, run it, and change the password of ubuntu user.
+Once logged in, change the default username/password credentials with the ones you prefer, issuing the following commands:
+```
+sudo passwd ubuntu
+<<type new password>>
+<<confirm password>>
+```
+
+Now gracefully shutdown the machine and unmount the disk image.
+
+The last step is to expand the image into a RAW format which can be used in Openstack.
+To do so, we can use the __Virtualbox clonehd__ command:
+
+_On Windows_:
+```
+C:\> cd "%PROGRAMFILES%\Oracle\VirtualBox"
+..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi.raw" --format raw
+```
+
+_On Linux_:
+```
+$ VBoxManage clonehd <path_to_old_image> "/home/ubuntu/InstallAnalyzer/sniffer.vdi.raw" --format raw
+```
+
+Finally, the user needs to upload the image to the Openstack cloud. This can be done via the Horizon web interface (if available) or via the image service CLI (a.k.a. Glance).
 
 That's it for the sniffer. Just go to the next step, [Guest installation](4_Guest.md)\.
 
@@ -45,15 +70,14 @@ $ sudo -H ./install_script.sh
 When prompted to install the **sniffer agent** type "Y". Optionally, you may want to install the pcap analyzer on the same host. If that is the case, answer "y" when prompted. In our specific case, being a single tier node, we also install the network analyzer on the sniffer.
 
 ### Configure network dapters
-We now must configure the network connectivity of the sniffer to reflect our network topology as presented in [Introduction](1_Introduction.md). 
+We now must configure the network connectivity of the sniffer to reflect our network topology as presented in [Introduction](1_Introduction.md).
 In particular:
 
-- **ETH0** is used as external network connectivity and statically acquires 172.16.0.2, routing traffic to 172.16.0.1 (VboxNat gateway).
-- **ETH1** is used as interface for internal network (TestNet), which guests connect to. In our case we bind it to 192.168.0.1/24. Both DHCP and DNS services will insist on this interface. 
-- **ETH2** is connected directly to the Host via the Virtualbox HostOnly adapter. The sniffer binds 192.168.56.2 while the Host binds 192.168.56.1.
-
+- **ETH0** is used as external network connectivity and dynamically acquires the ip address.
+- **ETH1** is used as interface for internal network (TestNet), which guests connect to. In our case we bind it to 192.168.0.1/24. Both DHCP and DNS services will insist on this interface.
 
 Let's edit __/etc/network/interface__ so that it matches the following:
+
 ```
 # --------------------------------------------------
 # Loopback device
@@ -62,11 +86,7 @@ iface lo inet loopback
 
 # WAN/Internet network, where traffic will be routed
 auto eth0
-iface eth0 inet static
-    address 172.16.0.2
-    netmask 255.255.255.0
-    gateway 172.16.0.1
-    dns-nameservers 172.16.0.1
+iface eth0 inet dhcp
 
 # Internal NIC, where guests are attached
 auto eth1
@@ -74,17 +94,12 @@ iface eth1 inet static
 	address 192.168.0.1
 	netmask 255.255.255.0
 
-# HostOnly adapter, used to talk with HostController Agent
-auto eth2
-iface eth2 inet static
-    address 192.168.56.2
-    netmask 255.255.255.0
-
 # --------------------------------------------------
 ```
 
 __NOTE__:
-Interface names might be different on new Linux distributions, because of the new predictable interfgace naming implementation. To avoid any issue we suggest to disable such feature by adding a custom switch in the default grub configuration file. To do so, edit your _/etc/default/grub_ changing the line from:
+Interface names might be different on new Linux distributions, because of the new predictable interfgace naming implementation. To avoid any issue we suggest to disable such feature by adding a custom switch in the default grub configuration file.
+To do so, edit your _/etc/default/grub_ changing the line from:
 
 ```
 GRUB_CMDLINE_LINUX=""
@@ -109,7 +124,7 @@ The first step is to adjust the configuration regarding the DHCP service and the
 # --------------------------------------------------
 interface=eth1
 interface=lo
-dhcp-range=192.168.0.2,192.168.0.250,255.255.255.0,12h 
+dhcp-range=192.168.0.2,192.168.0.250,255.255.255.0,12h
 # --------------------------------------------------
 ```
 This configuration tells to dnsmasq to provide DNS relay and DHCP service on both the loopback interface (lo) and on eth1 (InternalNat).
@@ -179,12 +194,25 @@ http://192.168.56.1:8080
 ```
 
 ## Image storage
-At this point the image of the sniffer is ready. However, it a good idea to clone it into __C:\InstallAnalyzer__\. To do so, ensure the sniffer is powered off, then open a terminal on the host and type the following command:
+At this point the image of the sniffer is ready.
+However, we need to convert it into raw format, so that it can be used within Openstack.
+To do so, ensure the sniffer is powered off and open a terminal and execute the following command:
 
+_On Windows_:
 ```
 C:\> cd "%PROGRAMFILES%\Oracle\VirtualBox"
-..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi" --format VDI
+..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi.raw" --format raw
 ```
+
+_On Linux_:
+```
+$ VBoxManage clonehd <path_to_old_image> "/home/ubuntu/InstallAnalyzer/sniffer.vdi.raw" --format raw
+```
+
+Such command will produce the _sniffer.vdi.raw_ image, which can now be loaded into the Openstack image manager.
+
+To do so, the user can either rely on the Horizon web interface (if available on the specific openstack cloud) or use the CLI.
+
 
 ## What next?
 The entire tutorial is divided into 5 steps, to be followed in order:
