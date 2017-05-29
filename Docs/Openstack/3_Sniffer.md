@@ -21,6 +21,7 @@ Hence, boot the VM and log in with the following credentials:
 - Password: reverse
 
 Once logged in, change the default username/password credentials with the ones you prefer, issuing the following commands:
+
 ```
 sudo passwd ubuntu
 <<type new password>>
@@ -29,21 +30,13 @@ sudo passwd ubuntu
 
 Now gracefully shutdown the machine and unmount the disk image.
 
-The last step is to expand the image into a RAW format which can be used in Openstack.
-To do so, we can use the __Virtualbox clonehd__ command:
+The last step is to upload the image to the Openstack cloud. This can be done via the Horizon web interface (if available) or via the image service CLI (a.k.a. Glance).
+If using the CLI, open a terminal and type the following (wither in windows or linux):
 
-_On Windows_:
 ```
-C:\> cd "%PROGRAMFILES%\Oracle\VirtualBox"
-..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi.raw" --format raw
+glance image-create --name SnifferImage --disk-format VDI --file <path_to_prepared_image> --progress
 ```
-
-_On Linux_:
-```
-$ VBoxManage clonehd <path_to_old_image> "/home/ubuntu/InstallAnalyzer/sniffer.vdi.raw" --format raw
-```
-
-Finally, the user needs to upload the image to the Openstack cloud. This can be done via the Horizon web interface (if available) or via the image service CLI (a.k.a. Glance).
+That command will upload the image located at _<path_to_prepared_image>_ to the Glance image service, assigning to it the name _SnifferImage_ and showing the progress of the operation. 
 
 That's it for the sniffer. Just go to the next step, [Guest installation](4_Guest.md)\.
 
@@ -193,26 +186,18 @@ Finally, the very last test that confirms the correct installation of the sniffe
 http://192.168.56.1:8080
 ```
 
-## Image storage
-At this point the image of the sniffer is ready.
-However, we need to convert it into raw format, so that it can be used within Openstack.
-To do so, ensure the sniffer is powered off and open a terminal and execute the following command:
+## Image upload
+At this point the image of the sniffer is ready. We can proceed with the upload into the Openstack cloud.
+First, ensure the local virtual machine is powered off, then unmount the disk image.
 
-_On Windows_:
-```
-C:\> cd "%PROGRAMFILES%\Oracle\VirtualBox"
-..\> VBoxManage clonehd <path_to_old_image> "C:\InstallAnalyzer\sniffer.vdi.raw" --format raw
-```
+Then, if Horizon service is available, the user can simply proceed with the image upload via the web interface. 
+If command line interface is preferred, the user can do the same by issuing the following command (both in Linux or Windows):
 
-_On Linux_:
 ```
-$ VBoxManage clonehd <path_to_old_image> "/home/ubuntu/InstallAnalyzer/sniffer.vdi.raw" --format raw
+glance image-create --name SnifferImage --disk-format VDI --file <path_to_prepared_image> --progress
 ```
 
-Such command will produce the _sniffer.vdi.raw_ image, which can now be loaded into the Openstack image manager.
-
-To do so, the user can either rely on the Horizon web interface (if available on the specific openstack cloud) or use the CLI.
-
+That command will upload the image located at _<path_to_prepared_image>_ to the Glance image service, assigning to it the name _SnifferImage_ and showing the progress of the operation. 
 
 ## What next?
 The entire tutorial is divided into 5 steps, to be followed in order:
