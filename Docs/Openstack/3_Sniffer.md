@@ -3,7 +3,7 @@ A sniffer is a machine (which might be physical or virtual) acting as a gateway 
 In accordance with the single tier topology, we will virtualize the sniffer alongside the guest vms.
 
 The user might opt for one of the following options in order to install the sniffer virtual image:
-- Download and use the pre-configured VDI image for _Virtualbox Emulated Sniffer_ [from here]() (__recommended for first-time users__)
+- Download and use the pre-configured VDI image for _Openstack Emulated Sniffer_ [from here]() (__recommended for first-time users__)
 - Manually configure from scratch a Sniffer VM (__needed for custom network configuration__)
 
 The first option is advised for users who approach to the system for the first time. In fact, the pre-configured image has been customized in accordance with the network configuration presented in [Introduction](1_Introduction.md). If the user has stuck with the topology presented in the previous steps, this image will work out-of-the-box. On the contrary, if some network configuration has been customized, it is necessary to adjust or configure the image from scratch.
@@ -13,8 +13,7 @@ This approach consists in using a pre-configured linux image which reflects all 
 Still, the user must change the default access credentials to the machine, preventing others to obtain unlegitimate access to such instance.
 
 So, the first step is to download the preconfigured image, which is [available here]().
-Once downloaded, extract the image into a known location, e.g. __C:\InstallAnalyzer__.
-Then, use your favourite virtualization system to create a virtual machine and mount such image as primary disk.
+Once downloaded, extract the image, use your favourite virtualization system to create a virtual machine and mount such image as primary disk.
 Hence, boot the VM and log in with the following credentials:
 
 - Username: ubuntu
@@ -117,11 +116,10 @@ The first step is to adjust the configuration regarding the DHCP service and the
 # --------------------------------------------------
 interface=eth1
 interface=lo
-dhcp-range=192.168.0.2,192.168.0.250,255.255.255.0,12h
 # --------------------------------------------------
 ```
-This configuration tells to dnsmasq to provide DNS relay and DHCP service on both the loopback interface (lo) and on eth1 (InternalNat).
-Is also enables the DHCP server, that assignings IPs in the range between 192.168.0.2 and 192.168.0.250.
+This configuration tells to dnsmasq to provide only DNS relay on both the loopback interface (lo) and on eth1 (InternalNat).
+Is does not enable the DHCP server: this task is up to the Openstack networking service.
 
 We now need to enable forwarding among interfaces. Edit /etc/sysctl.conf and adjust the forwarding option to match 1.
 ```
@@ -150,11 +148,6 @@ Since IPTABLES rules are not automatically persisted, we need to save them.
 $ sudo apt-get install iptables-persistent
 $ sudo iptables-save > /etc/iptables/rules.v4
 ```
-
-### Security Enforcements
-TODO: limiting netowrk capabilities of guests (i.e. avoid them to access LAN where HOST is connected).
-
-TODO: make the sniffer gateway to bind only 192.168.56.2 and block traffic from _192.168.0.x/24_ to _192.168.56.2_.
 
 ### Check everything is ok
 Upon successful reboot, make sure the sniffer service is correctly running, by typing:
