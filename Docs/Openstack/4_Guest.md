@@ -1,68 +1,188 @@
-# Openstack Guest Preparation
+# Guest installation
+This section of the tutorial will guide the user through the preparation of a virtual disk image, which will be used as base disk for the virtual Sandbox.
+Although most of the preparation steps are common to any kind of Guest, this guide targets the case of single tier configuration for a Windows 7 SP1 32bit client, using Virtualbox as virtualization tool.
 
-Currently, TheThing only supports Windows 7 SP1 32bit guest operating system. In this tutorial, we will specifically refer to Windows 7 Professional 32bit SP1. Other versions of windows 7 should work the same, but have not been tested.
-In this tutorial we will show how to configure guest machines to run on Openstack, e.g. how to prepare a VM image that will boot on Openstack cloud.
-To summarize, here there are the steps to perform:
+In summary, the user needs to:
 
-1. Create a virtual machine with Virtualbox/Qemu
-1. Install a fresh Windows 7 32bit on the guest
-1. Update Windows via Windows Update
-1. Install software dependencies
-1. Install virtio drivers
-1. Install and configure GuestAgent
-1. Verify everything is ok
-1. Publish the image to the Image service (Glance)
+1. Creating the virtual disk and virtual machines
+1. Installing a fresh Windows 7 SP1 32 bit OS
+1. Installing the Guest Agent
+1. Saving and storing the VM image
 
-## Create a VM
-Lauch Virtualbox and create a new virtual machine named *guest_preparation*. Assign Windows 7 32 bit as target OS, with at least 2Gb of ram memory and a new dynamic allocated disk of at least 25 Gb. Save the disk image on the desktop, naming it as *guest_preparation.vdi*.
-Edit the newly created machine: assign to it at least two vCPU and mount the windows 7 installation media in the CDROM drive. Also make sure CDROM is the first item in the boot order list. Then, make sure the VM has a single NIC with internet connection. For installation purpose, we advise to use NAT connection emulating an _Intel PRO/1000_ interface, natively supported by Windows 7.  
+## Creating the Virtual Machine
+The very first step consists in creating a temporary Virtual Machine, used only to prepare the virtual disk.
+This task can be achieved similarly, both in Windows and Linux.
 
-## Install and update Windows 7
-Start the VM and perform a fresh Windows 7 installation. Stick with defaults provided by the installation wizard. Upon first boot, create a user named _bot_ and make sure it needs no password authentication to login. This will make Windows to automatically log-on at startup.
-Then, activate windows and update the system (optional) via Windows Update. After all the updates have been installed, reboot the system and disable windows update. Disabling windows update will prevent guests from downloading and installing updates during the analysis.
-We also suggest to install a newer version of Internet Explorer, since Windwos 7 SP1 comes with the old Internet Explorer 8.   
-
-## Software dependencies
-The Guest Agent depends on a number of software packages/libraries. The user needs to download and install the following, in order:
-- Windows .NET 4.0 (available at: https://www.microsoft.com/en-gb/download/details.aspx?id=17718)
-- Visual c++ runtime environment 2013 32bit (v. 12, available at: https://www.microsoft.com/en-gb/download/details.aspx?id=40784)
-- Visual c++ runtime environment 2015 32bit (v. 14, available at: https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
-
-*Note*: Before taking this step, make sure all updates have been downloaded an installed on the system. Some of the dependencies might not work in case updates are not installed.
-
-## Install virtio drivers
-Guests running on Openstack require virt-io drivers to work under windows environment. Thus, the user has to install such drivers on the guest operating system. 
-
-![Virtio Network Adapter](img/vbox_virtio.png) ![Mounting virtio drivers ISO](img/vbox_virtio_2.png)
-
-To do so, shut down the virtual machine. Once it is powered off, edit its networking configuration by changing the NIC type of the network adapter from _Intel PRO/1000_ to _Paravirtualized Network (virtio-net)_. Then download the virt-io drivers from here: https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso. Once downlaoded, mount that iso on the vm's cdrom and boot the VM again.
-At boot time, the operating system should recognize the presence of a new driver and should start the driver installation wizard. Windows 7 will fail to install such drivers, so the user has to manually install them. To do so, open the "Device manager", navigate to the "Ethernet Controller" under "Other devices". Right click on it and select "update driver software". Then click on "Browse my computer for driver software". In the next dialog, sepcify the CDROM/DVDROM root path that contains the mounted image of virtio drivers (in our case D:\) and press "next". The System should now recognize and prompt to install the required driver.
-Once done, reboot the system again and check if the system is still able to access the network. If that is the case, the driver has been installed correctly. Otherwise something went wrong during the installation, and the driver should be reinstalled again.
-
-## Guest Agent installation
-At this point, the system is ready for GuestAgent installation. To do so, download the GuestAgent binaries archive, GuestAgent.zip (from: _TODO_) extract its contents into a *C:\GuestAgent*.
-The next step consists in making the GuestAgent to automatically run at startup. To do so, create a scheduled task named _Guest Agent Bootstrap_ and select "When I logon" as trigger. As action, specify "Start a program" and browse to _C:\GuestAgent\InstallerAnalyzer_Guest.exe_. In the "program's arguments" specify the public ip-address/hostname and port of the HostController. Eventually, specify the working directory where to start the program, which should be "C:\GuestAgent".
-Once the automatic task has been created, edit it and make sure the option "_Run with highest privileges_" is checked. 
-
-![Scheduled task conf 1](img/task_mgr_1.png) ![Scheduled task conf 2](img/task_mgr_2.png) ![Scheduled task conf 3](img/task_mgr_3.png)
-
-## Verify guest configuration
-Before preparing the image, it is a good idea to verify that everything is working. In particular, the user has to make sure that:
-- GuestAgent is installed and automatically starts up at boot
-- Guest has access to the internet and is able to reach the HostController
-
-A simple power-cycle of the vm should be enough to verify if most of the things are correctly working. In particular, if after a reboot the system automatically starts up the GuestController, and it tries to contact the HostController (without success, because it is still down), everything is working. Since the HostController hasn't been started yet, the Guest Controller will keep failing to connect. Don't warry about that, just force the Installer Analuzer process to shut down (using task manager) and shut down the system.
-
-## Publish the image on Openstack cloud
-Now that the guest preparation has completed, the user has to publish the image of the guest on the Openstack cloud. Before doing that, the user needs to convert the image into a RAW format, which will be then uploaded to the cloud.
-Since the image has been prepared using VirtualBox, we will use the VBoxManage utility to convert the disk. 
+### Windows
+The first step is to create a virtual disk. So, open a command prompt and type the following commands.
 
 ```
-VBoxManage clonehd path/to/prepared/guest/disk path/to/new/raw/disk --format raw
+C:\> cd \
+C:\> cd "%PROGRAMFILES%\Oracle\Virtualbox"
+C:\> VBoxManage createhd --filename C:\InstallAnalyzer\Disks\guest_preparation.vdi --size 25000
 ```
 
-This process might take a while. Once done, we can now upload it to the Openstack cloud we plan to use. THe easiest way to do that is to use the Horizon web interface. In case command line tools are installed (and preferred), the user can issue the following command:
+Now, we want to create a VM and attach the newly created disk to that.
 
 ```
-openstack image create --disk-format raw --container-format bare --public --file path/to/raw/image image_name
+C:\> VBoxManage createvm --name "guest_preparation" --ostype "Windows7" --register
+C:\> VBoxManage storagectl "guest_preparation" --name "SATA Controller" --add sata --controller IntelAHCI
+C:\> VBoxManage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "C:\InstallAnalyzer\Disks\guest_preparation.vdi"
 ```
+
+In order to install Windows 7 on the machine, we will need a virtual CD/DVD drive, that will mount our installation media. Therefore:
+
+```
+C:\> VBoxManage storagectl "guest_preparation" --name "IDE Controller" --add ide
+C:\> VBoxManage storageattach "guest_preparation" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /path/to/windows_7_SP1_32.iso
+```
+
+Finally, let's configure some other settings, such as ram, vram and hardware acceleration
+
+```
+C:\> VBoxManage modifyvm "guest_preparation" --ioapic on
+C:\> VBoxManage modifyvm "guest_preparation" --boot1 dvd --boot2 disk --boot3 none --boot4 none
+C:\> VBoxManage modifyvm "guest_preparation" --memory 2048 --vram 128
+C:\> VBoxManage modifyvm "guest_preparation" --nic1 nat --nictype1 virtio
+```
+
+At this point the virtual machine is ready to be started.
+
+### Linux
+The first step is to create a virtual disk. So, open a command prompt and type the following commands.
+
+```
+$ cd /home/ubuntu/InstallAnalyzer
+$ VBoxManage createhd --filename /home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi --size 25000
+```
+
+Now, we want to create a VM and attach the newly created disk to that.
+
+```
+$ VBoxManage createvm --name "guest_preparation" --ostype "Windows7" --register
+$ VBoxManage storagectl "guest_preparation" --name "SATA Controller" --add sata --controller IntelAHCI
+$ VBoxManage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "/home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi"
+```
+
+In order to install Windows 7 on the machine, we will need a virtual CD/DVD drive, that will mount our installation media. Therefore:
+
+```
+$ VBoxManage storagectl "guest_preparation" --name "IDE Controller" --add ide
+$ VBoxManage storageattach "guest_preparation" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /path/to/windows_7_SP1_32.iso
+```
+
+Finally, let's configure some other settings, such as ram, vram and hardware acceleration
+
+```
+$ VBoxManage modifyvm "guest_preparation" --ioapic on
+$ VBoxManage modifyvm "guest_preparation" --boot1 dvd --boot2 disk --boot3 none --boot4 none
+$ VBoxManage modifyvm "guest_preparation" --memory 2048 --vram 128
+$ VBoxManage modifyvm "guest_preparation" --nic1 nat --nictype1 virtio
+```
+
+At this point the virtual machine is ready to be started.
+
+## Install the Operating system
+The next step consists in installing Windows 7 SP1 32 bit on the vm. To do so, simply start the VM.
+To start the VM, just execute the following command from the command prompt (for both Windows and Linux):
+
+```
+...> VBoxManage startvm "guest_preparation"
+```
+
+The virtual machine will start its boot sequence. The windows installation procedure should begin shortly after the boot up. The user now needs to follow the installation wizard like in a normal machine.
+
+Once the installation is completed, the installation wizard will ask the user to choose an username and a password. While the user can type any kind of username, it is strictly **mandatory to set no password**, so that the auto log-on is activated. Note that this system will not work in case a password is set.
+
+The virtual machine prepared in advance is equipped with a single network adapter using a paratirtualized network interface. While most of the Linux distributions bundle a driver for the paravirtualized NIC, windows 7 does not. This means that we need to install a specific driver manually.
+To do so, let's first shut down the VM we created. Then, from the host, let's download the drivers from [here](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso). Once the download is complete, we need to mount that iso into the drive of the virtual machine.
+Once again, open a terminal/command prompt, navigate within the Virtualbox path, and type the following commands:
+
+```
+...> VBoxManage storageattach "guest_preparation" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium /path/to/downloaded_virtio_driver.iso
+```
+
+Then start the VM again and wait for the OS to complete the bootstrap.
+
+```
+...> VBoxManage startvm "guest_preparation"
+```
+
+Once the boot is complete, open a command prompt from within the VM, and type the following command:
+
+```
+C:\> mmc devmgmt.msc
+```
+
+Navigate among the devices and look for the unrecognized Ethernet Controller under "Other devices" category. Then right click on it and chose "Update driver".
+A driver installation wizard will begin. Select "Look for a driver in a specific location" and browse the D: drive, where the virtio iso has been mounted.
+The system will automatically recognize and will prompt confirmation for installing the needed driver. Be sure to accept the driver installation.
+
+## Windows update and activation
+At this stage the Guest is capable of surfing the Internet via its own virtual adapter (which is natted behind the network of the host).
+Therefore, the user can now activate the operating system. We also suggest to update the system via Windows Update. Once the updates have been correctly installed, ww strongly advise to disable the automatic update feature.
+Doing so, the system will not try to update the OS during the analysis. On the contrary, in case automatic updates are left enabled, there is a chance that they will trigger during the analysis, impacting on performance and potentially biasing sniffed network traffic.
+
+Once the system has been correctly activated and updates have been performed, the user can then proceed with the installation of the GuestAgent bootstrapper.
+
+## Install the GuestAgent Bootstrapper
+From within the Virtual Machine, open a browser and navigate to this URL: # TODO: fix the following URL.
+https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe
+
+Then, execute the installation of the bootstrapper, by simply double clicking on it. Then, follow the wizard to complete the installation. The installer will take care of downloading the needed python environment, necessary dependencies and will also install the bootstrap autostart task.
+
+To double check the bootstrapper installation, reboot the virtual machine. Just after Windows loads up, the bootstrapper program should automatically start, complaining about _no response from any sniffer_. If that is the case, the bootstrapper is correctly working. Now close the bootstrapper and shut down the virtual machine correctly.
+
+## Pack the image
+The image is finally ready. We just need to save it to a known location and make it "immutable".
+To do so, we need to shut down the virtual machine, release the disk from the storage controller, make it immutable and then remove the guest_preparation machine.
+
+### Windows
+Open a prompt and execute the following:
+
+```
+C:\> cd "%PROGRAMFILES%\Oracle\Virtualbox"
+C:\> vboxmanage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --medium none
+C:\> vboxmanage modifymedium "C:\InstallAnalyzer\Disks\guest_preparation.vdi" --type immutable --compact
+```
+
+Now we want to remove the virtual machine used to setup the virtual disk.
+
+```
+C:\> vboxmanage unregistervm "guest_preparation" --delete
+```
+
+Finally, make the virtual disk readonly. This step is not mandatory. However it is recommended toi make the disk readonly so that there is no change for Virtualbox to write on it.
+
+```
+C:\> attrib +R "C:\InstallAnalyzer\Disks\guest_preparation.vdi"
+```
+
+### Linux
+Similarly to the windows commands, let's open a terminal and release the disk from the virtual machine.
+
+```
+$ vboxmanage storageattach "guest_preparation" --storagectl "SATA Controller" --port 0 --device 0 --medium none
+$ vboxmanage modifymedium /home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi" --type immutable --compact
+```
+
+Then remove the virtual machine:
+
+```
+$ vboxmanage unregistervm "guest_preparation" --delete
+```
+
+Finally, make the virtual disk readonly. This step is not mandatory. However it is recommended toi make the disk readonly so that there is no change for Virtualbox to write on it.
+
+```
+$ chmod 555 "/home/ubuntu/InstallAnalyzer/Disks/guest_preparation.vdi"
+```
+
+## What next?
+The entire tutorial is divided into 5 steps, to be followed in order:
+
+1. [Introduction](1_Introduction.md)
+1. [Database and HostController installation](2_DB_and_HostController.md)
+1. [Sniffer installation](4_Guest.md)
+1. Guest installation
+1. [HostController configuration](5_Configuration.md) (_next step_)
