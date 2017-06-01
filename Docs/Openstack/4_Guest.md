@@ -17,11 +17,11 @@ In scu case, the user has to prepare the image via QEMU and then install the Gue
 This tutorial shows how to create the base Guest Image by using Virtualbox as hypervisor and then injecting the needed drivers via DISM utility.
 
 The first step is to create a virtual disk. Since we will then need to inject drivers into the disk, we use a disk format that is compatible with DISM utility, i.e. a VHD disk. 
-So, open a command prompt and type the following commands:
+So, open a command prompt as an administrator and type the following commands:
 
 ```
 C:\> cd "%PROGRAMFILES%\Oracle\Virtualbox"
-C:\> VBoxManage createhd --fromat VHD --filename C:\InstallAnalyzer\Disks\guest_preparation.vhd --size 25000
+C:\> VBoxManage createhd --filename "C:\InstallAnalyzer\Disks\guest_preparation.vhd" --size 25000 --fromat VHD
 ```
 
 Now, we want to create a VM and attach the newly created disk to that.
@@ -65,8 +65,13 @@ Doing so, the system will not try to update the OS during the analysis. On the c
 
 Once the system has been correctly activated and updates have been performed, the user can then proceed with the installation of the GuestAgent bootstrapper.
 
+##### Install .NET 4.0 (also applies for Linux Host preparation)
+Before installing the GuestAgent Bootstrapper, the system must comply with the .NET 4.0 dependency.
+To do so, download the 32bit version of the .NET framework from the Microsoft website. 
+The correct version of the .NET framework can be [found here](https://www.microsoft.com/en-us/download/details.aspx?id=17718).
+
 ##### Install the GuestAgent Bootstrapper (also applies for Linux Host preparation)
-From within the Virtual Machine, open a browser and dowload the guest agent installer from [this URL](https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe). 
+From within the Virtual Machine, open a browser and dowload the precompiled installation package for the guest agent at [this URL](https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe). 
 
 Then, execute the installation of the bootstrapper, by simply double clicking on it. Then, follow the wizard to complete the installation. The installer will take care of downloading the needed python environment, necessary dependencies and will also install the bootstrap autostart task.
 
@@ -75,9 +80,25 @@ Just after Windows loads up, the bootstrapper program should automatically start
 If that is the case, the bootstrapper is correctly working. 
 Now close the bootstrapper and shut down the virtual machine correctly.
 
+##### User's defined customization (also applies for Linux Host preparation)
+At this stage, the user might apply some specific customization to the image. For instance, he might want to install a new browser or some flash player plugin. 
+He can also install common software usually available on desktop computers, such as Java runtime or Microsoft Office. 
+If planning to analyze evasive binaries, the user should also surf the web and create fake social network accounts, so that cookies are left on the system.
+In our tutorial we do not perform any of these operations.
+
+##### Disable startup repair on unclean reboot
+It might happen that a VM reboots unexpectedly. When this happens, Microsoft Windows OS tend to start the Startup Recovery process, which require human actions to be completed.
+In our case, such recovery process cannot be applied, therefore we need to disable it.
+
+To do so, open a command prompt as administrator and type the following command:
+
+```
+C:\> bcdedit /set {default} recoveryenabled No
+```
+
 ##### Installing virt-io specific drivers
-Openstack virtualization might differ from the one used by Virtualbox. Most of the times Openstack uses libvirt and KVM for its guests. 
-In order to make our guests compatible with KVM module, we need to manually inject some _virtio_ drivers into the Windows installation.
+Openstack virtualization driver might differ from the one used by Virtualbox. Most of the times Openstack is configured to uses libvirt and KVM for its guests.
+In such case, we need to make our guests compatible with KVM module. Thus, we need to manually inject some _virtio_ drivers into the Windows installation.
 
 To do so, let's gracefully shutdown the virtual machine used so far (Start->shutdown from within the Guest).
 Then, let's download the VIRTIO signed drivers provided by RedHat [at this address](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso).
@@ -86,22 +107,22 @@ Once done, mount or extract the ISO into a specific location. We will refer to t
 It is not time to open an elevated command prompt from within the host. Then, we can mount the VHD image via the DISM utility.
 
 ```
-C:\> Dism /Mount-Image /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Index:1 /Name:"Windows 7" /MountDir:C:\test
+C:\> Dism /Mount-Image /ImageFile:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Index:1 /MountDir:C:\test
 ```
 
 Hence, let's add the storage, network, USB and PCI drivers with the following commands:
 
- ```
-C:\> Dism /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Add-Driver /Driver:VIRTIO_DIR/viostor/w7/x86
-C:\> Dism /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Add-Driver /Driver:VIRTIO_DIR/NetKVM/w7/x86
-C:\> Dism /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Add-Driver /Driver:VIRTIO_DIR/vioserial/w7/x86
-C:\> Dism /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Add-Driver /Driver:VIRTIO_DIR/Balloon/w7/x86
+```
+C:\> Dism /Image:C:\test /Add-Driver /Driver:VIRTIO_DIR/viostor/w7/x86
+C:\> Dism /Image:C:\test /Add-Driver /Driver:VIRTIO_DIR/NetKVM/w7/x86
+C:\> Dism /Image:C:\test /Add-Driver /Driver:VIRTIO_DIR/vioserial/w7/x86
+C:\> Dism /Image:C:\test /Add-Driver /Driver:VIRTIO_DIR/Balloon/w7/x86
 ```
 
 Finally, commit the changes and unmount the image:
 
 ```
-C:\> Dism /Unmount-Image /Image:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Commit
+C:\> Dism /Unmount-Image /MountDir:C:\InstallAnalyzer\Disks\guest_preparation.vhd /Commit
 ```
 
 ## Uploading the image to the Glance Service
@@ -109,7 +130,7 @@ Once the image has been prepared, we can now safely upload it to the Openstack c
 We choose the CLI, so we issue the following command:
 
 ```
-glance image-create --name SandboxImage --disk-format VHD --file C:\InstallAnalyzer\Disks\guest_preparation.vhd --progress
+glance image-create --name SandboxImage --disk-format vhd --container-format bare --file C:\InstallAnalyzer\Disks\guest_preparation.vhd --progress
 ```
 
 This concludes the preparation of the Sandbox image.
