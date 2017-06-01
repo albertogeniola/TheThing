@@ -125,10 +125,18 @@ Doing so, the system will not try to update the OS during the analysis. On the c
 
 Once the system has been correctly activated and updates have been performed, the user can then proceed with the installation of the GuestAgent bootstrapper.
 
-## Install the GuestAgent Bootstrapper
-From within the Virtual Machine, open a browser and navigate to this URL: # TODO: fix the following URL.
-https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe
+## Install .NET 4.0 and VC Redist 2013
+Before installing the GuestAgent Bootstrapper, the system must comply with some software package dependency.
+In particular, the agents rely on both Visual Studio 2013 Visual C++ registributable and .NET 4.0.
 
+Thus, download and install the 32bit version of the .NET framework from the Microsoft website. 
+The correct version of the .NET framework can be [found here](https://www.microsoft.com/en-us/download/details.aspx?id=17718).
+
+Then, do the same for the VC 2013 ++ Redistributable Package. 
+The 32 bit version [is available here](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe).
+
+## Install the GuestAgent Bootstrapper
+From within the Virtual Machine, open a browser and [navigate to this URL](https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe).
 Then, execute the installation of the bootstrapper, by simply double clicking on it. Then, follow the wizard to complete the installation. The installer will take care of downloading the needed python environment, necessary dependencies and will also install the bootstrap autostart task.
 
 To double check the bootstrapper installation, reboot the virtual machine. Just after Windows loads up, the bootstrapper program should automatically start, complaining about _no response from any sniffer_. If that is the case, the bootstrapper is correctly working. Now close the bootstrapper and shut down the virtual machine correctly.
