@@ -13,7 +13,10 @@ This section of the tutorial shows how to create a WinPE version of Windows 7 32
 
 ### WinPE installation
 From within __Tier 1__ download and install the [Windows Automated Installation Kit](https://www.microsoft.com/en-us/download/details.aspx?id=5753).
-Once installed, open a command prompt as amdministrator and cd into the WinPE Tools, located at _c:\program files\Windows AIK\Tools\PETools\_
+Note that the Windows Automated Installation Kit depends on .NET 2.0, which is not installed on Windows Server 2012 by default.
+To install .NET 2.0, open the Server Manger. Form the _Manage_ menu select _Install Roles and Features_. Follow the wizard until the _Server Roles_ tab is selected. Then Select the _.NET Framework 3.5 Features_ and click _Next>_. This operation requires a reboot, so the system must be restarted before continuing this tutorial.
+  
+Once the AIK has been installed, open a command prompt as amdministrator and cd into the WinPE Tools, located at _c:\program files\Windows AIK\Tools\PETools\_
 
 ### Preparation of boot folder
 The next step consists in creating the directory where to customize the WinPE image, then we copy necessaryu files into it.
@@ -98,7 +101,7 @@ exit
 ```
 dhcp
 set keep-san 1
-sanhook --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:base_disk
+sanhook --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:basedisk
 autoboot
 ```
 
@@ -122,7 +125,7 @@ reboot, the user has to boot into the iPXE enviroment and type the following two
 
 ```
 dhcp net0
-sanboot --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:base_disk
+sanboot --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:basedisk
 ```
 
 Replace _IP_OF_ISCSI_SERVER_ with the ip address of the node where the iSCSI service has been configured (in our case it collides with the HostController). 
