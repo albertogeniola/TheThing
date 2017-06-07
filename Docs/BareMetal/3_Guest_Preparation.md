@@ -53,7 +53,7 @@ At this point, we have prepared a basic WinPE bootable system, which can be boot
 Expert users might rely on specific TFTP software packages or use directly TFTP/DHCP services offered by Windows Server.
 For sake of simplicity, we suggest to use the excelent SERVA utility, freely [available for non commercial use here](https://www.vercot.com/~serva/download.html).
 
-To begin, download and extract the 32bit community version of SERVA. Then, run it as administrator. After that, right click on its tray icon and select _Settings_.
+To begin, download and extract the 32bit community version of SERVA on the HostController node. Then, run it as administrator. After that, right click on its tray icon and select _Settings_.
 Select the TFTP tab and enable the TFTP Server option. Then, specify the TFTP Server root directory so that it points to _C:\WinPE_.
 This operation is equivalent to copying the Boot directory into the TFTP root.
 
@@ -86,7 +86,6 @@ After that, save and reboot the system.
 At this stage, the system should start loading the iPXE environment. When prompted, press CTRL+B to enter the iPXE shell.
 Once the PXE environment is ready, type the following instructions:
 
-
 <!--
   Alternative method when BIOS fails over next boot device
 dhcp net0
@@ -99,9 +98,12 @@ exit
 ```
 dhcp
 set keep-san 1
-sanhook --drive 0x80 iscsi:<IP_OF_ISCSI_TARGET>::::<IQN>:base_disk
+sanhook --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:base_disk
 autoboot
 ```
+
+Replace _IP_OF_ISCSI_SERVER_ with the ip address of the node where the iSCSI service has been configured (in our case it collides with the HostController). 
+Also replace the _IQN_ADDRESS_ value with the one obtained in the previous step during iSCSI taret creation.
 
 The windows PE environment should start loading files. It might take some time to complete the WinPE boot process, be patient.
 Once booted into the WinPE environment, insert the Windows 7 installation disk into the DVD-ROM drive. Then, from the WinPE command prompt, cd into the dvd drive and run setup.exe
@@ -120,8 +122,11 @@ reboot, the user has to boot into the iPXE enviroment and type the following two
 
 ```
 dhcp net0
-sanboot --drive 0x80 iscsi:<ip_iscsi_target>::::<iqn_iscsi_target>:base_disk
+sanboot --drive 0x80 iscsi:<IP_OF_ISCSI_SERVER>::::<IQN_ADDRESS>:base_disk
 ```
+
+Replace _IP_OF_ISCSI_SERVER_ with the ip address of the node where the iSCSI service has been configured (in our case it collides with the HostController). 
+Also replace the _IQN_ADDRESS_ value with the one obtained in the previous step during iSCSI taret creation.
 
 Hopefully, the system will boot again and the installation will continue normally. Repeat this process until the 
 installation is done and the system, is ready to be customized.
@@ -192,13 +197,17 @@ Then, into the _Embedded script_ box, put the following:
 #!ipxe
 :retry_dhcp
 dhcp || goto retry_dhcp
+
+:boot
 echo Contacting preconfigured HTTP server for loading...
+chain --timeout 180000 http://<IP_OF_HOSTCONTROLLER>:<PORT_OF_HOSTCTRL_ISCSI_SRV>/boot/${net0/mac} || goto retry_boot
 
 :retry_boot
-chain --timeout 180000 http://<IP_OF_HOSTCONTROLLER>/boot/${net0/mac} || goto retry_boot
+sleep 1
+goto boot
 ```
 
-Replace the place marker __<IP_OF_HOSTCONTROLLER>__ with the IP address of the HostController in the LAN. 
+Replace the place marker __<IP_OF_HOSTCONTROLLER>__ with the IP address of the HostController in the LAN and _<PORT_OF_HOSTCTRL_ISCSI_SRV>_ with the port of the service dispatching iSCSI scripts (default is 8181). 
 Then, click _Proceed >>_ and download the ISO/USB image file. 
 
 As last step, burn the image file into as many CD/DVD as many Sandboxes are in place (analogously use win32diskimager to flash the .USB image on usb sticks).
