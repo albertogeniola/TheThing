@@ -21,8 +21,8 @@ Now we need to create a database named "analyzer" and an user called "host_contr
     C:\> psql -U postgres
     <<Type postgres password>>
 
-    postgres#: alter user host_controller_agent with encrypted password '<<new_database_password>>';
-    postgres#: grant all privileges on database analyzer to host_controller_agent;
+    postgres=#: alter user host_controller_agent with encrypted password '<<new_database_password>>';
+    postgres=#: grant all privileges on database analyzer to host_controller_agent;
 
     <CTRL+C> to exit
 ```
@@ -77,10 +77,21 @@ First, let's clone the git repository of HostController Agent
 
 Now we need to build the distributable version and install it via PIP command.
 ```
-   C:\> cd hostcontroller
-   C:\> C:\InstallAnalyzer\scripts\python setup.py sdist
-   C:\> cd dist
-   C:\> C:\InstallAnalyzer\scripts\pip install HostController-0.1.zip
+   C:\...\> cd hostcontroller
+   C:\...\> C:\InstallAnalyzer\scripts\python setup.py sdist
+   C:\...\> cd dist
+   C:\...\> C:\InstallAnalyzer\scripts\pip install HostController-0.1.zip
+   C:\...\> cd ..\..
+   C:\...\> rmdir /s /q hostcontroller
+```
+
+# Installing specific python dependencies
+When using iSCSI on a Windows host, the HostController relies on some supplementary python libraries, such as WMI (that is only available on WIndows).
+Such libraries are not handled by the setup script, and must be manually installed at this stage. To do so, open a command prompt and type the following command:
+
+```
+   C:\...\> cd InstallAnalyzer
+   C:\InstallAnalyzer> scripts\pip install pypiwin32 wmi
 ```
 
 ## Installing the iSCSI server role
@@ -101,7 +112,7 @@ New-IscsiVirtualDisk C:\InstallerAnalyzer\Disks\base_disk.vhd –Size 15GB
 Then, create an iSCSI target.
 
 ```
-New-IscsiServerTarget -TargetName base_disk -InitiatorIds "MACAddress:XX-XX-XX-XX-XX-XX"
+New-IscsiServerTarget -TargetName basedisk -InitiatorIds "MACAddress:XX-XX-XX-XX-XX-XX"
 ```
 
 Replace the _XX-XX-XX-XX-XX-XX_ with the mac address of the baremetal guest that will be used for operating system instllation and configuration.
@@ -110,7 +121,7 @@ In other words, this mac address must belong to the hardware node that will be u
 Finally, assign the VHD to the iSCSI target.
 
 ```
-Add-IscsiVirtualDiskTargetMapping base_disk C:\InstallerAnalyzer\Disks\base_disk.vhd
+Add-IscsiVirtualDiskTargetMapping basedisk C:\InstallerAnalyzer\Disks\base_disk.vhd
 ```
 
 Congratulations, you can now go ahead with the preparation of the Sandbox image.
