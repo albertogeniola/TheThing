@@ -106,7 +106,7 @@ Once the iSCSI service is installed, it is time to create a base virtual disk th
 To do so we suggest to use the cmdlets provided by powershell. So open a powershell prompt as administrator and start creating the base disk VHD.
 
 ```
-New-IscsiVirtualDisk C:\InstallerAnalyzer\Disks\base_disk.vhd –Size 15GB
+New-IscsiVirtualDisk C:\InstallAnalyzer\Disks\base_disk.vhd –Size 15GB
 ```
 
 Then, create an iSCSI target.
@@ -121,7 +121,7 @@ In other words, this mac address must belong to the hardware node that will be u
 Finally, assign the VHD to the iSCSI target.
 
 ```
-Add-IscsiVirtualDiskTargetMapping basedisk C:\InstallerAnalyzer\Disks\base_disk.vhd
+Add-IscsiVirtualDiskTargetMapping basedisk C:\InstallAnalyzer\Disks\base_disk.vhd
 ```
 
 Congratulations, you can now go ahead with the preparation of the Sandbox image.
