@@ -107,7 +107,7 @@ To do so we suggest to use the cmdlets provided by powershell. So open a powersh
 
 ```
 C:\> mkdir C:\InstallAnalyzer\Disks
-C:\> New-IscsiVirtualDisk C:\InstallAnalyzer\Disks\base_disk.vhd –Size 15GB
+C:\> New-IscsiVirtualDisk C:\InstallAnalyzer\Disks\base_disk.vhd -Size 15GB
 ```
 
 Then, create an iSCSI target.
