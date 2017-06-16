@@ -106,7 +106,8 @@ Once the iSCSI service is installed, it is time to create a base virtual disk th
 To do so we suggest to use the cmdlets provided by powershell. So open a powershell prompt as administrator and start creating the base disk VHD.
 
 ```
-New-IscsiVirtualDisk C:\InstallAnalyzer\Disks\base_disk.vhd â€“Size 15GB
+C:\> mkdir C:\InstallAnalyzer\Disks
+C:\> New-IscsiVirtualDisk C:\InstallAnalyzer\Disks\base_disk.vhd –Size 15GB
 ```
 
 Then, create an iSCSI target.
