@@ -14,7 +14,7 @@ This section of the tutorial shows how to create a WinPE version of Windows 7 32
 ### WinPE installation
 From within __Tier 1__ download and install the [Windows Automated Installation Kit](https://www.microsoft.com/en-us/download/details.aspx?id=5753).
 Note that the Windows Automated Installation Kit depends on .NET 2.0, which is not installed on Windows Server 2012 by default.
-To install .NET 2.0, open the Server Manger. Form the _Manage_ menu select _Install Roles and Features_. Follow the wizard until the _Server Roles_ tab is selected. Then Select the _.NET Framework 3.5 Features_ and click _Next>_. This operation requires a reboot, so the system must be restarted before continuing this tutorial.
+To install .NET 2.0, open the Server Manger. Form the _Manage_ menu select _Install Roles and Features_. Follow the wizard until the _Features_ tab is selected. Then Select the _.NET Framework 3.5 Features_ and click _Next>_. This operation requires a reboot, so the system must be restarted before continuing this tutorial.
   
 Once the AIK has been installed, open a command prompt as amdministrator and cd into the WinPE Tools, located at _c:\program files\Windows AIK\Tools\PETools\_
 
