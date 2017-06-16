@@ -215,8 +215,23 @@ Then, click _Proceed >>_ and download the ISO/USB image file.
 
 As last step, burn the image file into as many CD/DVD as many Sandboxes are in place (analogously use win32diskimager to flash the .USB image on usb sticks).
 
-## Setup the boot option of Sandboxes
-The very last step affecting bare-metal Sandbox configuration is to configure them to boot from the DVD/USB media previously prepared.
-So, plug in the USB sticks or insert the CD/DVDs into each sandbox. Then make sure sandboxes have no hard disk installed and that the first boot option in the bios corresponds to the media just installed. 
+## Setup BIOS of Sandboxes
+The very last step in configuring the Sandboxes consists in setting up their BIOS. The following configuration has to be performed on each bare metal machine being used in the analysis.
+Since there are many different BIOS vendors and possible configuration, we do not specify detailed instructions on how to perform bios configuration.
+On the contrary we will refer to them in general.
+
+In the first place, BIOS must be configured to boot only from the DVD/USB stick previously prepared. So make sure there is only one boot option enabled.
+
+Secondly, the BIOS should be configured to resume ON state on power loss. Such configuration will enable the sandbox to boot up when power is lost and regained (which is the way bare-metal machines are rebooted).
+Such configuration is __crucial__ for the system to work correctly.
+
+So, plug in the USB sticks or insert the CD/DVDs into each sandbox. Then make sure sandboxes have no hard disk installed and that the first boot option in the bios corresponds to the media just installed.
+
 
 # ARDUINO REBOOT: TODO.
+
+1. [Introduction](1_Introduction.md)
+1. [Database and HostController installation](2_DB_and_HostController.md)
+1. Guest installation
+1. [Sniffer installation](4_Sniffer.md) (_next step_)
+1. [HostController configuration](5_Configuration.md)

@@ -128,3 +128,9 @@ Add-IscsiVirtualDiskTargetMapping basedisk C:\InstallAnalyzer\Disks\base_disk.vh
 Congratulations, you can now go ahead with the preparation of the Sandbox image.
 Before continuing with the next step, note down both the IP address of this node on the LAN and the iqn address of the created iSCSI target. 
 Such values will be needed in the next steps.
+
+1. [Introduction](1_Introduction.md)
+1. Database and HostController installation
+1. [Guest installation](4_Guest_Preparation.md) (_next step_)
+1. [Sniffer installation](4_Sniffer.md)
+1. [HostController configuration](5_Configuration.md)
