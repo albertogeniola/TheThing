@@ -197,7 +197,7 @@ Thus, from within the HostController, open a browser and navigate to [https://ro
 Then, into the _Embedded script_ box, put the following:
 
 ```
-\#!ipxe
+#!ipxe
 :retry_dhcp
 dhcp || goto retry_dhcp
 
@@ -209,7 +209,7 @@ chain --timeout 180000 http://<IP_OF_HOSTCONTROLLER>:<PORT_OF_HOSTCTRL_ISCSI_SRV
 sleep 1
 goto boot
 ```
-
+__Note__: the code should always begin with the statement **\#!ipxe**. 
 Replace the place marker __<IP_OF_HOSTCONTROLLER>__ with the IP address of the HostController in the LAN and _<PORT_OF_HOSTCTRL_ISCSI_SRV>_ with the port of the service dispatching iSCSI scripts (default is 8181). 
 Then, click _Proceed >>_ and download the ISO/USB image file. 
 
