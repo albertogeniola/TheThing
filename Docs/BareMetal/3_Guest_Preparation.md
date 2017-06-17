@@ -197,7 +197,7 @@ Thus, from within the HostController, open a browser and navigate to [https://ro
 Then, into the _Embedded script_ box, put the following:
 
 ```
-\#!ipxe
+##!ipxe
 :retry_dhcp
 dhcp || goto retry_dhcp
 
