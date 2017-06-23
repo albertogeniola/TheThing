@@ -92,7 +92,7 @@ dhcp-range=192.168.0.2,192.168.0.250,255.255.255.0,12h
 # --------------------------------------------------
 ```
 This configuration tells to dnsmasq to provide DNS relay and DHCP service on both the loopback interface (lo) and on eth1 (InternalNat).
-Is also enables the DHCP server, that assignings IPs in the range between 192.168.0.2 and 192.168.0.250.
+Is also enables the DHCP server, that assignings IPs in the range between 192.168.0.2 and 192.168.0.125.
 
 We now need to enable forwarding among interfaces. Edit /etc/sysctl.conf and adjust the forwarding option to match 1.
 ```
@@ -135,12 +135,6 @@ CAPTURE_IF = "eth1"
 ```
 
 Be advised: that is a python configuration file and might respect python's syntax. The user should only change the right values values she is interested into without adding TABS or spaces.
-
-
-## Security Enforcements
-TODO: limiting netowrk capabilities of guests (i.e. avoid them to access LAN where HOST is connected).
-
-TODO: make the sniffer gateway to bind only 192.168.56.2 and block traffic from _192.168.0.x/24_ to _192.168.56.2_.
 
 ## Check everything is ok
 Upon successful reboot, make sure the sniffer service is correctly running, by typing:
