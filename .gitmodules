@@ -1,6 +1,3 @@
-[submodule "GuestAgents"]
-	path = GuestAgents
-	url = https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents.git
 [submodule "MiddleRouter"]
 	path = MiddleRouter
 	url = https://albertogeniola@bitbucket.org/aaltopuppaper/middlerouter.git
