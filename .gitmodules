@@ -1,0 +1,9 @@
+[submodule "TheThing-HostController"]
+	path = TheThing-HostController
+	url = https://github.com/albertogeniola/TheThing-HostController
+[submodule "TheThing-Sniffer"]
+	path = TheThing-Sniffer
+	url = https://github.com/albertogeniola/TheThing-Sniffer
+[submodule "TheThing-GuestBootstrapper"]
+	path = TheThing-GuestBootstrapper
+	url = https://github.com/albertogeniola/TheThing-GuestBootstrapper
