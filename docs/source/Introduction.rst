@@ -127,6 +127,8 @@ Such configuration enables better scalability, in accordance with resources avai
 
 Multitier Baremetal
 ###################
+.. image:: img/n_tiers_baremetal.png
+    :alt: Multitiers Baremetal
 
 The multitier baremetal configuration is implemented via a number of hardware nodes.
 In particular, the database, the HostController and crawlers usually reside on a single server.

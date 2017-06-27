@@ -1,10 +1,28 @@
 Topology description
 --------------------
-As already mentioned, the topology implemented by bare-metal guests includes at least 3 distinct hardware nodes:
+As already mentioned, the topology implemented by bare-metal guests includes at least 3 distinct hardware nodes and at least one smart plug:
 
     - HostController: implementing the central DB, the HostController Agent, the iSCSI service and crawlers;
     - Sniffer: a dedicated machine used as network gateway with sniffing capabilities;
     - Sandboxes: one or more dedicated machines used as sandboxes for the analysis;
+    - SmartPlug: one for each Sandbox taking part in the topology. At the moment, only TP-Link HS100 is supported.
+
+.. image:: img\n_tiers_baremetal_details.png
+    :alt: N-Tiers - Baremetal topology details
+
+From the picture above we identify two distinct network domains.
+The first one is identified by a private LAN connecting together HostController, Sandboxes and the Sniffer.
+The second one simply connects the sniffer to the external Internet.
+
+Like in the other topologies, the sniffer behaves as a gateway: it routes traffic incoming on ETH1 (LAN) to ETH1(WAN) and vice versa, implementing NAT.
+Therefore, the sniffer is configured to automatically receive an IP address on its ETH0.
+On the contrary, it will statically acquire *192.168.0.1* on ETH1.
+The sniffer will then serve DHCP and DNS requests on ETH1, assigning IPs from *192.168.0.2* up to *192.168.0.128*.
+
+The HostController resides in the same LAN where Sandboxes are.
+Therefore, it binds the address *192.168.0.251*.
+Again, since we plan to use a single HostController, the database is hosted locally to the HostController and will bind the loopback address (*127.0.0.1*).
+
 
 
 
@@ -26,3 +44,8 @@ The current implementation also assumes that the guest machines are equal in ter
 Such limitation depends on the usage of a single "base image", which includes all the basic configuration and clean state for a single sandbox.
 In fact, different sandboxes would probably require different drivers and configurations, thus many different base-image for each hardware configuration.
 Such requirement would vanish the benefits of maintaining a single central disk image.
+
+In order to implement machine hard control, we use smart plugs.
+Unfortunately, the system only supports TP-Link HS100 smart plugs at the current stage.
+However, it is not diffucult to implement specific software layer driver for different smart plugs.
+Expert users or pyuthon programmers could adapt the code in order to work with different smart plugs.
