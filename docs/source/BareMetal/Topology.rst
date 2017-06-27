@@ -7,7 +7,7 @@ As already mentioned, the topology implemented by bare-metal guests includes at 
     - Sandboxes: one or more dedicated machines used as sandboxes for the analysis;
     - SmartPlug: one for each Sandbox taking part in the topology. At the moment, only TP-Link HS100 is supported.
 
-.. image:: img\n_tiers_baremetal_details.png
+.. image:: img\baremetal-details.png
     :alt: N-Tiers - Baremetal topology details
 
 From the picture above we identify two distinct network domains.
@@ -32,7 +32,7 @@ More details are available in the Sniffer configuration section.
 Notes on the iSCSI diskless boot
 --------------------------------
 
-.. image:: img\iscsi boot.png
+.. image:: img\iscsiboot.png
     :alt: Sequence diagram descripbint iSCSI boot procedure for bare-metal sandboxes
 
 Bare metal sandboxes take advantages of diskless boot over iSCSI protocol in order to implement clean state rollback and centralized image management.
