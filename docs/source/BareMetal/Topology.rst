@@ -23,16 +23,26 @@ The HostController resides in the same LAN where Sandboxes are.
 Therefore, it binds the address *192.168.0.251*.
 Again, since we plan to use a single HostController, the database is hosted locally to the HostController and will bind the loopback address (*127.0.0.1*).
 
+Sandboxes reside in the private LAN and acquire an IP address directly from the sniffer, via DHCP.
+Each sandbox is connected to the power line through a smart plug, which joins the private LAN too.
+The sniffer will then be configured to assign specific IP addresses to smart plugs so that each of them will be leased an known IP address via DHCP.
+Such configuration is necessary in order to create a binding between each smart plug and its connected sandbox.
+More details are available in the Sniffer configuration section.
 
+Notes on the iSCSI diskless boot
+--------------------------------
+Bare metal sandboxes take advantages of diskless boot over iSCSI protocol in order to implement clean state rollback and centralized image management.
+The idea is to use diskless sandboxes, which boot over the network via a *PreXecution Environment (PXE)*.
+Each sandbox is configured to boot via a permanent USB stick containing a custom version of *iPXE*.
+When the sandbox boots up, the iPXE script will perform a special HTTP request against the HostController Service.
+When this happens, the HostController will allocate a new differencing disk upon a base virtual disk.
+Then it exposes the newly created disk via an iSCSI target. Then, the web request performed by the sandbox is responded with the iSCSI boot parameter that the specific sandbox needs to apply.
+As a result, the Sandbox will hook the specified SAN and will boot up.
+Every IO against the disk will go trough iSCSI and will only affect the differencing disk attached to that iSCSI LUN.
 
-
-Bare metal sandboxes take advantages of diskless boot over iSCSI protocol.
-In particular the HostController exposes on iSCSI target for each Sandbox node.
-Each sandbox is configured to mount the iSCSI target and booting the OS directly from there.
-Such objective is achieved by booting into a _PreXecution Environment_ (PXE), mounting the associated iSCSI target and then booting.
-
-The preparation of such nodes is time consuming and requires basic knowledge of iSCSI and PXE technologies.
-However, in this tutorial we will guide the user in the whole process.
+When the analysis is over, the HostController will hard reboot the Sandbox using the associated power plug.
+Therefore the sandbox will boot again in the iPXE environment and the process reiterates.
+The only difference with the previous step is that the differencing disk will be deleted and created again (such operation takes almost no time).
 
 Requirements and limitations
 ----------------------------

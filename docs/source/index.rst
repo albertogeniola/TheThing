@@ -20,6 +20,7 @@ TheThing was developed precisely to offer a valid tool for collecting informatio
    Introduction
    Virtualbox/Introduction
    Openstack/Introduction
+   BareMetal/Introduction
 
 
 Indices and tables

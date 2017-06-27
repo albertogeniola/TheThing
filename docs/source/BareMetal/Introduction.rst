@@ -1,7 +1,7 @@
 .. _multitier_baremetal:
 
-Introduction
-============
+Multitier baremetal configuration.
+==================================
 Most of the Malware Sandbox Analysis System freely available nowadays only rely on virtualization for performing the analysis.
 In fact, any virtualization system facilitates the analysis by implementing snapshots and rollback functions, which are particularly useful to revert the status of the sandbox after every analysis.
 Moreover, most hypervisors also export a series of APIs which can be used to automate the control the sandboxes.
@@ -15,3 +15,9 @@ This represents an interesting use-case that justifies the need of bare-metal sa
 TheThing has been developed to support bare metal guests from the very beginning.
 Moreover, bare metal support has been developed in respect with both scalability and performance.
 In particular, TheThing takes full advantage of diskless boot together with iSCSI protocol in order to implement *centralized image management* and *fast rollback*.
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+
+   Topology
