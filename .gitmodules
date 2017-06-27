@@ -1,9 +1,9 @@
-[submodule "GuestAgents"]
-	path = GuestAgents
-	url = https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents.git
-[submodule "HostController"]
-	path = HostController
-	url = https://albertogeniola@bitbucket.org/aaltopuppaper/hostcontroller.git
-[submodule "MiddleRouter"]
-	path = MiddleRouter
-	url = https://albertogeniola@bitbucket.org/aaltopuppaper/middlerouter.git
+[submodule "TheThing-HostController"]
+	path = TheThing-HostController
+	url = https://github.com/albertogeniola/TheThing-HostController
+[submodule "TheThing-Sniffer"]
+	path = TheThing-Sniffer
+	url = https://github.com/albertogeniola/TheThing-Sniffer
+[submodule "TheThing-GuestBootstrapper"]
+	path = TheThing-GuestBootstrapper
+	url = https://github.com/albertogeniola/TheThing-GuestBootstrapper

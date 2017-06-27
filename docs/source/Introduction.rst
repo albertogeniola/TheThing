@@ -105,9 +105,12 @@ Single-tier configuration, using VirtualBox
 .. image:: img/1_tier_virtualbox.png
     :alt: Single tier tutorial
 
-This is the easiest configuration possible, recommended for first time users. It only requires a single node to work and implements all networking communication locally. In fact, all the components of the infrastructure are deployed on a single node. The virtualization system used for this purpose is VirtualBox.
+This is the easiest configuration possible, recommended for first time users.
+It only requires a single node to work and implements all networking communication locally.
+In fact, all the components of the infrastructure are deployed on a single node. The virtualization system used for this purpose is VirtualBox.
 
-Although the 1-tier configuration is the easiest to start from, it cannot scale. We suggest to start using this configuration and once confident, move to a more scalable configuration.
+Although the 1-tier configuration is the easiest to start from, it cannot scale.
+We suggest to start using this configuration and once confident, move to a more scalable configuration.
 
 :ref:`Installation and Deployment instructions for such topology are available HERE <singletier_vbox>`
 
@@ -116,14 +119,21 @@ Two-tiers configuration, using Openstack
 .. image:: img/2_tiers_openstack.png
     :alt: Two tiers tutorial
 
-The two tiers configuration uses a node for hosting the database, the crawlers and a HostController. In this specific case, Openstack cloud is used as virtualization option. Such configuration enables better scalability, in accordance with resources available on the specific Openstack cloud.
+The two tiers configuration uses a node for hosting the database, the crawlers and a HostController.
+In this specific case, Openstack cloud is used as virtualization option.
+Such configuration enables better scalability, in accordance with resources available on the specific Openstack cloud.
 
 :ref:`Installation and Deployment instructions for such topology are available HERE <twotiers_openstack>`
 
-Baremetal, [todo]
-#################
+Multitier Baremetal
+###################
 
-**Installation and Deployment instructions for such topology are available HERE**.
+The multitier baremetal configuration is implemented via a number of hardware nodes.
+In particular, the database, the HostController and crawlers usually reside on a single server.
+Another hardware node is used as dedicated sniffer.
+Eventually, a (potentially large) number of dedicated nodes are used as bare-metal sandboxes.
+
+:ref:`Installation and Deployment instructions for such topology are available HERE <multitier_baremetal>`
 
 Mixed multitier, [todo]
 #######################
