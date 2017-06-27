@@ -31,6 +31,10 @@ More details are available in the Sniffer configuration section.
 
 Notes on the iSCSI diskless boot
 --------------------------------
+
+.. image:: img\iscsi boot.png
+    :alt: Sequence diagram descripbint iSCSI boot procedure for bare-metal sandboxes
+
 Bare metal sandboxes take advantages of diskless boot over iSCSI protocol in order to implement clean state rollback and centralized image management.
 The idea is to use diskless sandboxes, which boot over the network via a *PreXecution Environment (PXE)*.
 Each sandbox is configured to boot via a permanent USB stick containing a custom version of *iPXE*.
