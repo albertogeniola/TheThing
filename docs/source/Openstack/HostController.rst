@@ -171,7 +171,7 @@ First, let's clone the git repository of HostController Agent
 
 .. code-block:: none
 
-   C:\> git clone https://albertogeniola@bitbucket.org/aaltopuppaper/hostcontroller.git
+   C:\> git clone https://github.com/albertogeniola/TheThing-HostController.git
 
 
 Now we need to build the distributable version and install it via PIP command.

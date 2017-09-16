@@ -159,7 +159,7 @@ The VC++ 2015 32 bit version `is available her <https://download.microsoft.com/d
 
 Install the GuestAgent Bootstrapper
 -----------------------------------
-From within the Virtual Machine, open a browser and `navigate to this URL <https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe>`_.
+From within the Virtual Machine, open a browser and `navigate to this URL <https://github.com/albertogeniola/TheThing-GuestBootstrapper/blob/master/Windows%207%20SP1%2032bit/dist/agent_setup.exe?raw=true>`_.
 Then, execute the installation of the bootstrapper, by simply double clicking on it.
 Then, follow the wizard to complete the installation.
 The installer will take care of downloading the needed python environment, necessary dependencies and will also install the bootstrap autostart task.

@@ -91,7 +91,7 @@ The VC++ 2015 32 bit version `is available here <https://download.microsoft.com/
 
 Install the GuestAgent Bootstrapper
 ###################################
-From within the Virtual Machine, open a browser and dowload the precompiled installation package for the guest agent at `this URL <https://albertogeniola@bitbucket.org/aaltopuppaper/guestagents/raw/0594043ec791e95944487a3646c9994ebf045fd6/ClientBootstrapper/dist/agent_setup.exe>`_ .
+From within the Virtual Machine, open a browser and dowload the precompiled installation package for the guest agent at `this URL <https://github.com/albertogeniola/TheThing-GuestBootstrapper/blob/master/Windows%207%20SP1%2032bit/dist/agent_setup.exe?raw=true>`_ .
 
 Then, execute the installation of the bootstrapper, by simply double clicking on it.
 Then, follow the wizard to complete the installation.

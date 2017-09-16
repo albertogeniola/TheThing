@@ -21,7 +21,7 @@ Log into the sniffer terminal and then issue the following commands.
 
 ```
 $ cd /tmp
-$ git clone https://albertogeniola@bitbucket.org/aaltopuppaper/middlerouter.git
+$ git clone https://github.com/albertogeniola/TheThing-Sniffer.git
 $ cd middlerouter
 $ sudo chmod +x install_script.sh
 $ sudo -H ./install_script.sh
